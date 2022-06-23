@@ -9,7 +9,7 @@ int main()
   FILE *arq;
   char line[LINESIZE + 1];
   char *separator;
-  double valor;
+  double valor = 0;
   char *content;
   char *eptr;
 
@@ -18,13 +18,13 @@ int main()
 
   // abre o arquivo
   arq = fopen("4252839552.log", "rw");
+
   if (!arq)
   {
     perror("Erro ao abrir/criar arquivo");
     exit(1);
   }
 
-  // TODO: strtok
   fgets(line, LINESIZE, arq); // tenta ler uma linha
   while (!feof(arq))          // testa depois de tentar ler!
   {
@@ -32,10 +32,10 @@ int main()
     printf("%s\n", separator);
 
     content = strtok(NULL, " ");
-    if (strcmp(separator, "altitude") == 0)
+    if (strcmp(separator, "distance") == 0)
     {
-      valor = strtod(content, &eptr);
-      printf("valor: %f\n", valor);
+      valor += strtod(content, &eptr);
+      printf("valor: %.2f km\n", valor/1000);
     }
     // printf("%s \n", separator);
 
@@ -43,6 +43,5 @@ int main()
   }
 
   // fecha o arquivo
-  free(separator);
   fclose(arq);
 }

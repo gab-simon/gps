@@ -7,35 +7,40 @@ int main(void)
 {
   DIR *dirstream;
   struct dirent *direntry;
+  char pathname[1024]; /* should alwys be big enough */
 
+  sprintf(pathname, "%s/%s");
+  
   // abre um diretório
-  dirstream = opendir("./logs");
+  dirstream = opendir(pathname);
   if (!dirstream)
   {
     perror("Couldn't open the directory");
     exit(1);
   }
-
-  int a = 0;
-  // varre as entradas do diretório aberto
-  for (;;)
+  else
   {
-    // pega a próxima entrada
-    direntry = readdir(dirstream);
 
-    // se for nula, encerra a varredura
-    if (!direntry)
-      break;
-
-    // mostra conteúdo da entrada
-    printf("%s\t", direntry->d_name);
-    switch (direntry->d_type)
+    // varre as entradas do diretório aberto
+    for (;;)
     {
-    case DT_REG:
-      printf(" (arquivo)\n");
-      break;
-    default:
-      printf(" (outros)\n");
+      // pega a próxima entrada
+      direntry = readdir(dirstream);
+
+      // se for nula, encerra a varredura
+      if (!direntry)
+        break;
+
+      // mostra conteúdo da entrada
+      printf("%s\t", direntry->d_name);
+      switch (direntry->d_type)
+      {
+      case DT_REG:
+        printf(" (arquivo)\n");
+        break;
+      default:
+        printf(" (outros)\n");
+      }
     }
   }
 
