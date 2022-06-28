@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "libbike.h"
 
 #define LINESIZE 1024
 
-int main()
+int open_log(char *file, char *namepath)
 {
   FILE *arq;
   char line[LINESIZE + 1];
@@ -16,7 +17,8 @@ int main()
   separator = malloc(LINESIZE);
   eptr = malloc(LINESIZE);
 
-  // abre o arquivo
+  printf(namepath);
+
   arq = fopen("4252839552.log", "rw");
 
   if (!arq)
@@ -25,8 +27,8 @@ int main()
     exit(1);
   }
 
-  fgets(line, LINESIZE, arq); // tenta ler uma linha
-  while (!feof(arq))          // testa depois de tentar ler!
+  fgets(line, LINESIZE, arq); /* tenta ler uma linha */
+  while (!feof(arq))          /* testa depois de tentar ler! */
   {
     separator = strtok(line, ": ");
     printf("%s\n", separator);
@@ -35,13 +37,13 @@ int main()
     if (strcmp(separator, "distance") == 0)
     {
       valor += strtod(content, &eptr);
-      printf("valor: %.2f km\n", valor/1000);
+      printf("valor: %.2f km\n", valor / 1000);
     }
-    // printf("%s \n", separator);
+    /* printf("%s \n", separator); */
 
-    fgets(line, LINESIZE, arq); // tenta ler a próxima linha
+    fgets(line, LINESIZE, arq); /* tenta ler a próxima linha */
   }
 
-  // fecha o arquivo
+  /* fecha o arquivo */
   fclose(arq);
 }
