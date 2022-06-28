@@ -8,23 +8,36 @@ int main(int argc, char *argv[])
 {
   DIR *dp;
   struct dirent *dirp;
-
-  const char *extension = "/";
   char *namepath;
 
-  scanf("%c",namepath);
+  if (strcmp(argv[1], "-d") == 0)
+  {
+    namepath = argv[2];
+    printf(namepath);
+  }
 
-  char *name_with_extension;
-  name_with_extension = malloc(strlen(namepath));
-  strcpy(name_with_extension, namepath);
-  strcat(name_with_extension, extension);             /* add the extension */
+  // verificar se tem /
+  //  const char *extension = "/";
 
-  dp = opendir(name_with_extension);
+  // scanf("%c",namepath);
+
+  // char *name_with_extension;
+  // name_with_extension = malloc(strlen(1));
+  // strcpy(name_with_extension, namepath);
+  // strcat(name_with_extension, extension);
+
+  dp = opendir(namepath);
 
   while ((dirp = readdir(dp)) != NULL)
-    printf("%s\n", dirp->d_name);
+  {
+    if (dirp->d_type == DT_REG)
+    {
+      printf("%s\n", dirp->d_name);
+    }
+  }
 
   closedir(dp);
-  free(name_with_extension);
+
+  free(namepath);
   exit(EXIT_SUCCESS);
 }
