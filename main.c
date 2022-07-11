@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
   if (strcmp(argv[1], "-d") == 0)
   {
     namepath = argv[2];
-    printf(namepath);
+    // printf(namepath);
   }
 
   /* verificar se tem /
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 
   while ((dirp = readdir(dp)) != NULL)
   {
-    printf("%s\n", dirp->d_name);
+    // printf("%s\n", dirp->d_name);
     open_log(namepath, dirp->d_name);
   }
 
