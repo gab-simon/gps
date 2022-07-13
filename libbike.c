@@ -19,9 +19,10 @@ int open_log(char *file, char *namepath)
     separator = malloc(LINESIZE);
     name_log = malloc(LINESIZE);
     eptr = malloc(LINESIZE);
+    content = malloc(LINESIZE);
 
     printf(namepath, "\n");
-    
+
     strcat(name_log, file);
     strcat(name_log, "/");
     strcat(name_log, namepath);
@@ -41,19 +42,22 @@ int open_log(char *file, char *namepath)
         separator = strtok(line, ": ");
         printf("%s\n", separator);
 
-        content = strtok(NULL, " ");
-        if (strcmp(separator, "distance") == 0)
+        // printf("%s\n", content);
+        if (strcmp(separator, "Gear") == 0)
         {
-            valor += strtod(content, &eptr);
+            content = strtok(NULL, " ");
+            printf("%s\n", content);
+            // valor += strtod(content, &eptr);
             // printf("valor: %.2f km\n", valor / 1000);
         }
         /* printf("%s \n", separator); */
 
         fgets(line, LINESIZE, arq); /* tenta ler a próxima linha */
     }
-
-    free(name_log);
-
     /* fecha o arquivo */
+    free(name_log);
+    free(content);
+    free(file);
+    free(namepath);
     fclose(arq);
 }

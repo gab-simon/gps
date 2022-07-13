@@ -18,16 +18,6 @@ int main(int argc, char *argv[])
     // printf(namepath);
   }
 
-  /* verificar se tem /
-  //  const char *extension = "/";
-
-  // scanf("%c",namepath);
-
-  // char *name_with_extension;
-  // name_with_extension = malloc(strlen(1));
-  // strcpy(name_with_extension, namepath);
-  // strcat(name_with_extension, extension);*/
-
   dp = opendir(namepath);
 
   while ((dirp = readdir(dp)) != NULL)
