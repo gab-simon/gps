@@ -5,9 +5,67 @@
 
 #define LINESIZE 1024
 
+lista_t *lista_cria()
+{
+    lista_t *l;
+
+    if ((l = malloc(sizeof(lista_t))) == NULL)
+        return 0;
+
+    l->ini = NULL;
+    l->tamanho = 0;
+    return l;
+}
+
+lista_t *lista_destroi(lista_t *l)
+{
+    nodo_l_t *tmp1 = l->ini;
+    nodo_l_t *tmp2 = l->ini->prox;
+
+    while ((tmp1 != NULL) && (tmp2 != NULL))
+    {
+        free(tmp1);
+    }
+
+    free(l);
+    l = NULL;
+
+    return NULL;
+}
+
+int lista_insere_inicio(lista_t *l, double distance)
+{
+    nodo_l_t *tmp;
+
+    if ((tmp = malloc(sizeof(nodo_l_t))) == NULL)
+        return 0;
+
+    tmp->bike->distance = distance;
+
+    tmp->prox = l->ini;
+    l->ini = tmp;
+    l->tamanho++;
+
+    return 1;
+}
+
+void lista_imprime(lista_t *l)
+{
+    nodo_l_t *tmp = l->ini;
+
+    while (tmp != NULL)
+    {
+        printf("%.f\taaaaaaaaaaaaaaaaaaa", tmp->distance);
+        tmp = tmp->prox;
+    }
+    printf("\n\n");
+}
+
 int open_log(char *file, char *namepath)
 {
     FILE *arq;
+    lista_t *l;
+
     long numbytes;
     char *text;
     char line[LINESIZE + 1];
@@ -66,11 +124,14 @@ int open_log(char *file, char *namepath)
 
         fgets(line, LINESIZE, arq); /* tenta ler a próxima linha */
     }
-
+    lista_insere_inicio(l, valor);
     /* fecha o arquivo */
     // free(content);
     // free(file);
     // free(namepath);
+
+    lista_imprime(l);
+    lista_destroi(l);
     fclose(arq);
 
     return 0;

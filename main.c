@@ -16,7 +16,6 @@ int main(int argc, char *argv[])
   if (strcmp(argv[1], "-d") == 0)
   {
     namepath = argv[2];
-    // printf(namepath);
   }
 
   dp = opendir(namepath);
