@@ -57,7 +57,7 @@ typedef struct BikeRack
 
 } BikeRack_t;
 
-char *getGearBike(FILE *arq, char *gear);
+char *createBikeByGear(FILE *arq, char *gear);
 int open_log(char *file, char *namepath);
 
 #endif

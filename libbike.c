@@ -6,7 +6,7 @@
 #define TAM_MAX 100
 #define LINESIZE 1024
 
-char *getGearBike(FILE *arq, char *gear) {
+char *createBikeByGear(FILE *arq, char *gear) {
     
     /* Cria o token e verifica se houve erro no malloc */
     char *token = malloc(sizeof(char) * TAM_MAX);
