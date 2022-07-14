@@ -24,7 +24,8 @@ int main(int argc, char *argv[])
   printf("3. Lista todas atividades agrupadas por bicicleta e ordenadas pela data.\n");
   printf("4. Lista todas atividades agrupadas por bicicleta e ordenadas pela distância.\n");
   printf("5. Lista todas atividades ordenadas pela subida acumulada.\n");
-  printf("6. Histograma.\n\n");
+  printf("6. Histograma.\n");
+  printf("Sair");
   scanf("%i", &op);
 
   while ((dirp = readdir(dp)) != NULL)

@@ -3,69 +3,38 @@
 #include <string.h>
 #include "libbike.h"
 
+#define TAM_MAX 100
 #define LINESIZE 1024
 
-lista_t *lista_cria()
-{
-    lista_t *l;
-
-    if ((l = malloc(sizeof(lista_t))) == NULL)
-        return 0;
-
-    l->ini = NULL;
-    l->tamanho = 0;
-    return l;
-}
-
-lista_t *lista_destroi(lista_t *l)
-{
-    nodo_l_t *tmp1 = l->ini;
-    nodo_l_t *tmp2 = l->ini->prox;
-
-    while ((tmp1 != NULL) && (tmp2 != NULL))
-    {
-        free(tmp1);
+char *getGearBike(FILE *arq, char *gear) {
+    
+    /* Cria o token e verifica se houve erro no malloc */
+    char *token = malloc(sizeof(char) * TAM_MAX);
+    if(token == NULL) {
+        printf("Erro ao criar token!\n");
+        return NULL;
     }
 
-    free(l);
-    l = NULL;
-
-    return NULL;
-}
-
-int lista_insere_inicio(lista_t *l, double distance)
-{
-    nodo_l_t *tmp;
-
-    if ((tmp = malloc(sizeof(nodo_l_t))) == NULL)
-        return 0;
-
-    tmp->bike->distance = distance;
-
-    tmp->prox = l->ini;
-    l->ini = tmp;
-    l->tamanho++;
-
-    return 1;
-}
-
-void lista_imprime(lista_t *l)
-{
-    nodo_l_t *tmp = l->ini;
-
-    while (tmp != NULL)
-    {
-        printf("%.f\taaaaaaaaaaaaaaaaaaa", tmp->distance);
-        tmp = tmp->prox;
+    /* Obtem o conteudo da linha do arquivo */
+    fgets(token, TAM_MAX, arq);
+    char *saveToken = token;    /* Usado para dar free no malloc do token */
+    
+    /* Recorta o nome do atributo "Gear" e pega o modelo juntamente com espaços */
+    token = strtok(token, ": ");
+    token = strtok(NULL, " ");
+    while(token != NULL) {
+        strcat(gear, token);
+        strcat(gear, " ");
+        token = strtok(NULL, " ");
     }
-    printf("\n\n");
+    strtok(gear, "\n");
+    free(saveToken);
+    return gear;
 }
 
 int open_log(char *file, char *namepath)
 {
     FILE *arq;
-    lista_t *l;
-
     long numbytes;
     char *text;
     char line[LINESIZE + 1];
@@ -124,14 +93,11 @@ int open_log(char *file, char *namepath)
 
         fgets(line, LINESIZE, arq); /* tenta ler a próxima linha */
     }
-    lista_insere_inicio(l, valor);
     /* fecha o arquivo */
     // free(content);
     // free(file);
     // free(namepath);
 
-    lista_imprime(l);
-    lista_destroi(l);
     fclose(arq);
 
     return 0;
