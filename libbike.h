@@ -57,6 +57,9 @@ typedef struct BikeRack
 
 } BikeRack_t;
 
+BikeRack_t *initRoot();
+BikeData_t *initBike();
+char *getGearBike(FILE *arq, char *gear);
 char *createBikeByGear(FILE *arq, char *gear);
 int open_log(char *file, char *namepath);
 
