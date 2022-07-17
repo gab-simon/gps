@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "libbike.h": "c",
+        "stdlib.h": "c"
+    }
+}

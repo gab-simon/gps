@@ -17,20 +17,14 @@ typedef struct BikeData
     date_t Date;
     char *gear;
     double distance;
-
     double speedTotal;
     double speedMed;
     double speedMax;
-
     double heartRateTotal;
     double heartRateMed;
     double heartRateMax;
-    // int hrValid; da pra ser uma variavel local
-
     double cadenceTotal;
     double cadenceMed;
-    // int cadenceVal; da pra ser uma variavel local
-
     double altitude;
     double clunth_altitude;
 
@@ -40,7 +34,7 @@ typedef struct BikeData
 typedef struct Bike
 {
     BikeData_t *bike;
-    struct bike *nextBike;
+    struct Bike *nextBike;
     int id;
 } Bike_t;
 
@@ -58,9 +52,16 @@ typedef struct BikeRack
 } BikeRack_t;
 
 BikeRack_t *initRoot();
+Bike_t *createNodoBike(Bike_t *bike);
 BikeData_t *initBike();
+BikeData_t *bikeInfo(FILE *arq);
+
+void deleteBikeRack(BikeRack_t *root);
+void discorvedGear(BikeRack_t *root);
+void insertBike(BikeRack_t *root, BikeData_t *bike, int element);
+void insertionSortDistancia(BikeRack_t *root);
 char *getGearBike(FILE *arq, char *gear);
 char *createBikeByGear(FILE *arq, char *gear);
-int open_log(char *file, char *namepath);
+char *readLine(FILE *arq, BikeData_t *bike, char *info, double *valueField, char *nameField);
 
 #endif

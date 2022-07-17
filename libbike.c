@@ -50,6 +50,52 @@ BikeData_t *initBike()
     return bike;
 }
 
+void deleteBikeRack(BikeRack_t *root)
+{
+    /* Variaveis auxiliares */
+    BikeRack_t *auxRack = root;
+    Bike_t *auxBike;
+
+    /* Percorre todos os nodosRaiz e nodosBicicleta de forma iterativa*/
+    while (root != NULL)
+    {
+        auxBike = auxRack->element;
+        while (auxBike != NULL)
+        {
+            /* Libera memoria dos nodosBicicleta */
+            auxRack->element = auxRack->element->nextBike;
+            free(auxBike);
+            auxBike = auxRack->element;
+        }
+
+        auxRack = root;
+        root = root->nextRack;
+        free(auxRack->gear);
+        free(auxRack);
+    }
+
+    return;
+}
+
+char *readLine(FILE *arq, BikeData_t *bike, char *info, double *valueField, char *nameField)
+{
+
+    /* Pega o conteudo da linha e cria uma copia */
+    fgets(info, TAM_MAX, arq);
+    char saveInfo[TAM_MAX];
+    strcpy(saveInfo, info);
+
+    /* Tratamento caso a linha seja vazia */
+    if ((strlen(info) <= 1))
+        return "linha vazia";
+
+    /* Pega o nome do atributo e usa a copia de info para obter o valor do atributo */
+    nameField = strtok(info, ":");
+    *valueField = strtof(strtok(saveInfo, strcat(nameField, ":")), NULL);
+
+    return strtok(nameField, ":");
+}
+
 char *createBikeByGear(FILE *arq, char *gear)
 {
 
@@ -81,7 +127,6 @@ char *createBikeByGear(FILE *arq, char *gear)
 
 char *getGearBike(FILE *arq, char *gear)
 {
-
     /* Cria o token e verifica se houve erro no malloc */
     char *token = malloc(sizeof(char) * TAM_MAX);
     if (token == NULL)
@@ -108,78 +153,123 @@ char *getGearBike(FILE *arq, char *gear)
     return gear;
 }
 
-int open_log(char *file, char *namepath)
+Bike_t *createNodoBike(Bike_t *bike)
 {
-    FILE *arq;
-
-    BikeRack_t *root = initRoot();
-
-    long numbytes;
-    char *text;
-    char line[LINESIZE + 1];
-    char *separator;
-    double value = 0;
-    char *content;
-    char *eptr;
-    char *name_log;
-
-    /* separadores */
-    // separator = malloc(LINESIZE);
-    name_log = malloc(LINESIZE * 10);
-    eptr = malloc(LINESIZE);
-    content = malloc(LINESIZE);
-
-    strcat(name_log, file);
-    strcat(name_log, "/");
-    strcat(name_log, namepath);
-
-    arq = fopen(name_log, "r");
-    printf(name_log);
-
-    if (!arq)
+    /* Cria a estrutura e verifica se houve erro no malloc */
+    Bike_t *nodoBike = malloc(sizeof(Bike_t));
+    if (nodoBike == NULL)
     {
-        perror("Erro ao abrir/criar arquivo");
-        printf("\n\n%s\n", name_log);
-        exit(1);
+        printf("Error ao criar nodo da bike.");
+        return NULL;
     }
 
-    // char ch;
-    // while ((ch = fgetc(arq)) != EOF)
-    // {
-    //     putchar(ch);
-    // }
+    /* Atribuicao de valores default */
+    nodoBike->bike = bike;
+    nodoBike->nextBike = NULL;
 
-    fgets(line, LINESIZE, arq); /* tenta ler uma linha */
-    while (!feof(arq))          /* testa depois de tentar ler! */
+    return nodoBike;
+}
+
+void discorvedGear(BikeRack_t *root)
+{
+    BikeRack_t *roam = root;
+    int i = 1;
+
+    printf("As biciletas(gear) encontradas foram: \n");
+    while (roam != NULL)
     {
-        separator = strtok(line, ":");
-        // printf("%s\n", separator);
+        printf("%d) %s\n", i, roam->gear);
+        roam = roam->nextRack;
+        i++;
+    }
 
-        // content = strtok(NULL, " ");
-        // printf("%s\n", content);
+    return;
+}
 
-        if (strcmp(separator, "distance") == 0)
+void insertionSortDistancia(BikeRack_t *root)
+{
+    BikeRack_t *auxRack = root;
+    Bike_t *bike;
+    Bike_t *key;
+    int i, j;
+
+    /* While para percorrer os nodosRaiz */
+    while (root != NULL)
+    {
+        Bike_t **array = malloc(sizeof(Bike_t) * root->quant); // Cria vetor para ordenar atividades
+        bike = root->element;
+        /* Preenche vetor com os nodosBicicleta filhos da raiz */
+        for (i = 0; i < auxRack->quant; i++)
         {
-            content = strtok(NULL, " ");
-            printf("%s\n", content);
-            if (strtod(content, &eptr) != 0)
-            {
-                value += strtod(content, &eptr);
-                printf("value: %.6f km\n", value / 1000);
-            }
+            array[i] = bike;
+            bike = bike->nextBike;
         }
-        /* printf("%s \n", separator); */
 
-        fgets(line, LINESIZE, arq); /* tenta ler a próxima linha */
+        /* Algoritmo do insertionSort */
+        for (i = 1; i < auxRack->quant; i++)
+        {
+            key = array[i];
+            j = i - 1;
+            while (j >= 0 && array[j]->bike->distance >= key->bike->distance)
+            {
+                array[j + 1] = array[j];
+                j--;
+            }
+            array[j + 1] = key;
+        }
+
+        /* Insere os nodos ordenados do array na mesma raiz */
+        auxRack->element = array[0];
+        for (i = 0; i < auxRack->quant; i++)
+        {
+            bike = array[i];
+            bike->nextBike = array[i + 1];
+        }
+        auxRack->lastElement = array[auxRack->quant - 1];
+        auxRack->lastElement->nextBike = NULL;
+
+        /* Pula para a proxima raiz e libera a memoria do array criado */
+        auxRack = auxRack->nextRack;
+        free(array);
     }
-    /* fecha o arquivo */
-    // free(content);
-    // free(file);
-    // free(namepath);
 
-    fclose(arq);
+    return;
+}
 
-    return 0;
+void insertBike(BikeRack_t *root, BikeData_t *bike, int element)
+{
+
+    BikeRack_t *NodoNextBike;
+
+    /* Caso seja a primeira insercao */
+    if (root->element == NULL)
+    {
+        root->element = createNodoBike(bike);
+        root->quant++;
+        root->lastElement = root->element;
+        root->element->id = element;
+        strcpy(root->gear, bike->gear);
+    }
+    /* Caso modelo analisado de bicicleta ja tenha sido inserido */
+    else if (strcmp(root->gear, bike->gear) == 0)
+    {
+        NodoNextBike = createNodoBike(bike);
+        root->lastElement->nextBike = NodoNextBike;
+        root->lastElement = NodoNextBike;
+        root->quant++;
+        root->lastElement->id = element;
+    }
+    /* Caso modelo analisado de bicicleta nao tenha sido inserido */
+    else
+    {
+        root->nextRack = initRoot();
+        root->nextRack->element = createNodoBike(bike);
+        root->nextRack->quant++;
+        root->nextRack->element = root->nextRack->element;
+        root->nextRack->element->id = element;
+        strcpy(root->nextRack->gear, bike->gear);
+    }
+    return;
 }
 
 BikeData_t *bikeInfo(FILE *arq)
@@ -210,7 +300,7 @@ BikeData_t *bikeInfo(FILE *arq)
     while (!feof(arq))
     {
 
-        field = lerLinha(arq, bike, &value, field, info);
+        field = readLine(arq, bike, info, &value, field);
 
         /* Subida acumulada */
         if (!strcmp(field, "altitude"))
@@ -237,7 +327,7 @@ BikeData_t *bikeInfo(FILE *arq)
         else if (!strcmp(field, "heart_rate") && value > 0)
         {
             if (value > bike->heartRateMax)
-                bike->heartRateMax= value;
+                bike->heartRateMax = value;
             bike->heartRateTotal = bike->heartRateTotal + value;
             quantHeartRate++;
         }
