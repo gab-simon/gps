@@ -4,17 +4,31 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+typedef struct Histogram
+{
+    int class1;
+    int class2;
+    int class3;
+    int class4;
+    int class5;
+    int class6;
+    int class7;
+    int class8;
+    int class9;
+    int class10;
+    int class11;
+} Histogram_t;
 typedef struct Date
 {
     int day;
     int mounth;
     int year;
-
-} date_t;
+} Date_t;
 
 typedef struct BikeData
 {
-    date_t Date;
+    Date_t Date;
     char *gear;
     double distance;
     double speedTotal;
@@ -40,7 +54,6 @@ typedef struct Bike
 
 typedef struct BikeRack
 {
-
     struct BikeRack *nextRack;
     struct BikeRack *backRack;
     Bike_t *element;
@@ -48,11 +61,12 @@ typedef struct BikeRack
 
     int quant;
     char *gear;
-
 } BikeRack_t;
 
 BikeRack_t *initRoot();
-Bike_t *createNodoBike(Bike_t *bike);
+Histogram_t *initHistogram();
+BikeRack_t* getGear(BikeRack_t *root, int op);
+Bike_t *createNodoBike(BikeData_t *bike);
 Bike_t **sortByCumulativeClimb(BikeRack_t *root, Bike_t **array, int tam);
 BikeData_t *initBike();
 BikeData_t *bikeInfo(FILE *arq);
@@ -63,6 +77,10 @@ void insertBike(BikeRack_t *root, BikeData_t *bike, int element);
 void sortByDistance(BikeRack_t *root);
 void printInfos(BikeRack_t *root);
 void printCumulativeClimp(BikeRack_t *root);
+void printInfoBike(BikeRack_t *root);
+void momentData(char *dateMoment, Date_t *dateInfo);
+void printHistogram(BikeRack_t *root);
+Histogram_t* Histogram(BikeRack_t *root);
 char *getGearBike(FILE *arq, char *gear);
 char *createBikeByGear(FILE *arq, char *gear);
 char *readLine(FILE *arq, BikeData_t *bike, char *info, double *valueField, char *nameField);

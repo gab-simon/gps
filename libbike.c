@@ -3,7 +3,7 @@
 #include <string.h>
 #include "libbike.h"
 
-#define TAM_MAX 100
+#define TAM_MAX 150
 #define LINESIZE 1024
 
 BikeRack_t *initRoot()
@@ -15,6 +15,7 @@ BikeRack_t *initRoot()
         return NULL;
     }
     root->element = NULL;
+    root->lastElement = NULL;
     root->nextRack = NULL;
     root->quant = 0;
     root->gear = malloc(sizeof(char) * TAM_MAX);
@@ -48,6 +49,27 @@ BikeData_t *initBike()
     bike->Date.day = 0;
 
     return bike;
+}
+
+Histogram_t *initHistogram()
+{
+    Histogram_t *histogram = malloc(sizeof(Histogram_t));
+    if (histogram == NULL)
+        return NULL;
+
+    histogram->class1 = 0;
+    histogram->class2 = 0;
+    histogram->class3 = 0;
+    histogram->class4 = 0;
+    histogram->class5 = 0;
+    histogram->class6 = 0;
+    histogram->class7 = 0;
+    histogram->class8 = 0;
+    histogram->class9 = 0;
+    histogram->class10 = 0;
+    histogram->class11 = 0;
+
+    return histogram;
 }
 
 void deleteBikeRack(BikeRack_t *root)
@@ -94,6 +116,61 @@ char *readLine(FILE *arq, BikeData_t *bike, char *info, double *valueField, char
     *valueField = strtof(strtok(saveInfo, strcat(nameField, ":")), NULL);
 
     return strtok(nameField, ":");
+}
+
+/* Obtem o dia, mês e ano dos logs e insere os dados na struct dataInfo presente na struct bicicletaInfo */
+void momentData(char *dateMoment, Date_t *dateInfo)
+{
+
+    char *token = malloc(sizeof(char) * TAM_MAX);
+    if (token == NULL)
+    {
+        printf("Erro ao criar token!\n");
+        return;
+    }
+
+    /* Copia o conteudo da string que possui a data para o token */
+    strcpy(token, dateMoment);
+    char *saveToken = token; /* Usado para dar free no malloc do token */
+
+    // Tratamento do mês
+    token = strtok(token, " ");
+    token = strtok(NULL, " ");
+    if (strcmp(token, "Jan"))
+        dateInfo->mounth = 1;
+    else if (strcmp(token, "Feb"))
+        dateInfo->mounth = 2;
+    else if (strcmp(token, "Mar"))
+        dateInfo->mounth = 3;
+    else if (strcmp(token, "Apr"))
+        dateInfo->mounth = 4;
+    else if (strcmp(token, "May"))
+        dateInfo->mounth = 5;
+    else if (strcmp(token, "Jun"))
+        dateInfo->mounth = 6;
+    else if (strcmp(token, "Jul"))
+        dateInfo->mounth = 7;
+    else if (strcmp(token, "Aug"))
+        dateInfo->mounth = 8;
+    else if (strcmp(token, "Sep"))
+        dateInfo->mounth = 9;
+    else if (strcmp(token, "Oct"))
+        dateInfo->mounth = 10;
+    else if (strcmp(token, "Nov"))
+        dateInfo->mounth = 11;
+    else
+        dateInfo->mounth = 12;
+
+    // Tratamento do dia
+    token = strtok(NULL, " ");
+    dateInfo->day = atoi(token);
+
+    // Tratamento do ano
+    token = strtok(NULL, " ");
+    dateInfo->year = atoi(token);
+
+    free(saveToken);
+    return;
 }
 
 char *createBikeByGear(FILE *arq, char *gear)
@@ -153,10 +230,10 @@ char *getGearBike(FILE *arq, char *gear)
     return gear;
 }
 
-Bike_t *createNodoBike(Bike_t *bike)
+Bike_t *createNodoBike(BikeData_t *bike)
 {
     /* Cria a estrutura e verifica se houve erro no malloc */
-    Bike_t *nodoBike = malloc(sizeof(Bike_t)*10);
+    Bike_t *nodoBike = malloc(sizeof(Bike_t));
     if (nodoBike == NULL)
     {
         printf("Error ao criar nodo da bike.");
@@ -185,15 +262,65 @@ void discorvedGear(BikeRack_t *root)
     return;
 }
 
-void printInfos(BikeRack_t *root) {
+BikeRack_t *getGear(BikeRack_t *root, int op)
+{
+    BikeRack_t *auxRack = root;
+
+    int i;
+    for (i = 0; i < op - 1; i++)
+    {
+        if (auxRack == NULL)
+            break;
+        auxRack = auxRack->nextRack;
+    }
+
+    return auxRack;
+}
+
+void printInfoBike(BikeRack_t *root)
+{
+    // BikeRack_t *rack = root;
+    // BikeRack_t *auxRack;
+    // auxRack = rack;
+    // for (i = 0; i < op - 1; i++)
+    // {
+    //     if (auxRack == NULL)
+    //         break;
+    //     auxRack = auxRack->proxRaiz;
+    // }
+
+    Bike_t *auxBike;
+    printf("MODELO                  DATA           DISTÂNCIA(km)   VEL. MEDIA(km/h)   VEL. MAXIMA(km/h)   HR MEDIO    HR MAXIMO    CADENCIA    SUBIDA ACUMULADA\n");
+    auxBike = root->element;
+    while (auxBike != NULL)
+    {
+        printf("%-24s", auxBike->bike->gear);
+        printf("%02d/%d/%-10d", auxBike->bike->Date.day, auxBike->bike->Date.mounth, auxBike->bike->Date.year);
+        printf("%-16.2f", auxBike->bike->distance / 1000);
+        printf("%-19.2f", auxBike->bike->speedMed * 3.6);
+        printf("%-20.2f", auxBike->bike->speedMax * 3.6);
+        printf("%-12.2f", auxBike->bike->heartRateMed);
+        printf("%-13.2f", auxBike->bike->heartRateMax);
+        printf("%-12.2f", auxBike->bike->cadenceMed);
+        printf("%.2f\n", auxBike->bike->clunth_altitude);
+        auxBike = auxBike->nextBike;
+    }
+
+    return;
+}
+
+void printInfos(BikeRack_t *root)
+{
 
     int i = 0;
     Bike_t *bikeAux;
     BikeRack_t *rootAux = root;
     printf("MODELO                          DATA           DISTÂNCIA(km)   VEL. MEDIA(km/h)   VEL. MAXIMA(km/h)   HR MEDIO    HR MAXIMO    CADENCIA    SUBIDA ACUMULADA\n");
-    while(rootAux != NULL) {
+    while (rootAux != NULL)
+    {
         bikeAux = rootAux->element;
-        while(bikeAux != NULL) {
+        while (bikeAux != NULL)
+        {
             printf("%-30s", bikeAux->bike->gear);
             printf("%02d/%d/%-10d", bikeAux->bike->Date.day, bikeAux->bike->Date.mounth, bikeAux->bike->Date.year);
             printf("%-16.2f", bikeAux->bike->distance / 1000);
@@ -206,13 +333,11 @@ void printInfos(BikeRack_t *root) {
 
             i++;
             bikeAux = bikeAux->nextBike;
-
         }
         rootAux = rootAux->nextRack;
     }
     return;
 }
-
 
 void sortByDistance(BikeRack_t *root)
 {
@@ -221,10 +346,10 @@ void sortByDistance(BikeRack_t *root)
     Bike_t *key;
     int i, j;
 
-    while (root != NULL)
+    while (auxRack != NULL)
     {
-        Bike_t **array = malloc(sizeof(Bike_t) * root->quant); // Cria vetor para ordenar atividades
-        bike = root->element;
+        Bike_t **array = malloc(sizeof(Bike_t) * 150); // Cria vetor para ordenar atividades
+        bike = auxRack->element;
         /* Preenche vetor com os nodosBicicleta filhos da raiz */
         for (i = 0; i < auxRack->quant; i++)
         {
@@ -246,14 +371,14 @@ void sortByDistance(BikeRack_t *root)
         }
 
         /* Insere os nodos ordenados do array na mesma raiz */
-        auxRack->element = array[0];
-        for (i = 0; i < auxRack->quant; i++)
-        {
-            bike = array[i];
-            bike->nextBike = array[i + 1];
-        }
-        auxRack->lastElement = array[auxRack->quant - 1];
-        auxRack->lastElement->nextBike = NULL;
+        // auxRack->element = array[0];
+        // for (i = 0; i < auxRack->quant; i++)
+        // {
+        //     bike = array[i];
+        //     bike->nextBike = array[i + 1];
+        // }
+        // auxRack->lastElement = array[auxRack->quant - 1];
+        // auxRack->lastElement->nextBike = NULL;
 
         /* Pula para a proxima raiz e libera a memoria do array criado */
         auxRack = auxRack->nextRack;
@@ -263,14 +388,16 @@ void sortByDistance(BikeRack_t *root)
     return;
 }
 
-void printCumulativeClimp(BikeRack_t *root) {
+void printCumulativeClimp(BikeRack_t *root)
+{
 
     int i, tam = 0;
     BikeRack_t *auxRack = root;
     Bike_t **array = malloc(sizeof(Bike_t) * 100);
 
     /* Acha a quantidade de atividades total */
-    while(auxRack != NULL) {
+    while (auxRack != NULL)
+    {
         tam = tam + auxRack->quant;
         auxRack = auxRack->nextRack;
     }
@@ -280,11 +407,12 @@ void printCumulativeClimp(BikeRack_t *root) {
     array = sortByCumulativeClimb(auxRack, array, tam);
 
     /* Imprime os dados do array */
-    printf("MODELO                  DATA           DISTÂNCIA(km)   VEL. MEDIA(km/h)   VEL. MAXIMA(km/h)   HR MEDIO    HR MAXIMO    CADENCIA    SUBIDA ACUMULADA\n");
+    printf("MODELO                  DATA           DISTÂNCIA(km)   VEL. MEDIA(km/h)   VEL. MAXIMA(km/h)   HR MEDIO(bpm)     HR MAXIMO(bpm)    CADENCIA(rpm)    SUBIDA ACUMULADA(m)\n");
     i = 0;
-    while(i < tam) {
+    while (i < tam)
+    {
         printf("%-24s", array[i]->bike->gear);
-        // printf("%02d/%d/%-10d", array[i]->bike->Date.day, array[i]->bike->Date.mounth, array[i]->bike->Date.year);
+        printf("%02d/%d/%-10d", array[i]->bike->Date.day, array[i]->bike->Date.mounth, array[i]->bike->Date.year);
         printf("%-16.2f", array[i]->bike->distance / 1000);
         printf("%-19.2f", array[i]->bike->speedMed * 3.6);
         printf("%-20.2f", array[i]->bike->speedMax * 3.6);
@@ -297,10 +425,85 @@ void printCumulativeClimp(BikeRack_t *root) {
 
     /* Libera memoria do array */
     free(array);
-
 }
 
-Bike_t **sortByCumulativeClimb(BikeRack_t *root, Bike_t **array, int tam) { 
+Histogram_t *Histogram(BikeRack_t *root)
+{
+    int i, j;
+    int lim1 = 20, lim2 = 29;
+    Bike_t *bikeAux;
+    BikeRack_t *rootAux = root;
+    Histogram_t *auxHistogram = initHistogram();
+    while (rootAux != NULL)
+    {
+        bikeAux = rootAux->element;
+        while (bikeAux != NULL)
+        {
+            if (((bikeAux->bike->distance / 1000) >= 20) && ((bikeAux->bike->distance / 1000) <= 29))
+                auxHistogram->class1 += 1;
+            else if (((bikeAux->bike->distance / 1000) >= 30) && ((bikeAux->bike->distance / 1000) <= 39))
+                auxHistogram->class2 += 1;
+            else if (((bikeAux->bike->distance / 1000) >= 40) && ((bikeAux->bike->distance / 1000) <= 49))
+                auxHistogram->class3 += 1;
+            else if (((bikeAux->bike->distance / 1000) >= 50) && ((bikeAux->bike->distance / 1000) <= 59))
+                auxHistogram->class4 += 1;
+            else if (((bikeAux->bike->distance / 1000) >= 60) && ((bikeAux->bike->distance / 1000) <= 69))
+                auxHistogram->class5 += 1;
+            else if (((bikeAux->bike->distance / 1000) >= 70) && ((bikeAux->bike->distance / 1000) <= 79))
+                auxHistogram->class6 += 1;
+            else if (((bikeAux->bike->distance / 1000) >= 80) && ((bikeAux->bike->distance / 1000) <= 89))
+                auxHistogram->class7 += 1;
+            else if (((bikeAux->bike->distance / 1000) >= 90) && ((bikeAux->bike->distance / 1000) <= 99))
+                auxHistogram->class8 += 1;
+            else if (((bikeAux->bike->distance / 1000) >= 100) && ((bikeAux->bike->distance / 1000) <= 109))
+                auxHistogram->class9 += 1;
+            else if (((bikeAux->bike->distance / 1000) >= 110) && ((bikeAux->bike->distance / 1000) <= 119))
+                auxHistogram->class10 += 1;
+            else if (((bikeAux->bike->distance / 1000) >= 110) && ((bikeAux->bike->distance / 1000) <= 119))
+                auxHistogram->class11 += 1;
+        }
+    }
+
+    return;
+}
+
+void printHistogram(BikeRack_t *root)
+{
+    int i, j, k;
+    int lim1 = 20, lim2 = 29;
+    Bike_t *bikeAux;
+    BikeRack_t *rootAux = root;
+    Histogram_t *auxHistogram;
+    auxHistogram = Histogram(rootAux);
+
+    while (rootAux != NULL)
+    {
+        bikeAux = rootAux->element;
+        while (bikeAux != NULL && lim2 <= 109)
+        {
+
+            for (i = 0; i < 10; i++)
+            {
+                printf("%d - %d |", lim1, lim2);
+                for (j = 0; j < 10; j++)
+                {
+                    for (k = 0; k < auxHistogram->class1; k++)
+                    {
+                        printf("*");
+                    }
+                }
+                printf("\n");
+                lim1 += 10;
+                lim2 += 10;
+            }
+            printf("       123456789#1233456789#123456789\n");
+            printf("Distancia|              Quantidade\n\n");
+        }
+    }
+}
+
+Bike_t **sortByCumulativeClimb(BikeRack_t *root, Bike_t **array, int tam)
+{
 
     /* Declaracao de variaveis */
     BikeRack_t *auxRack = root;
@@ -309,9 +512,11 @@ Bike_t **sortByCumulativeClimb(BikeRack_t *root, Bike_t **array, int tam) {
     int i, j = 0;
 
     /* Preenche vetor com os nodosBicicleta de todas as raizes */
-    while(auxRack != NULL) {
+    while (auxRack != NULL)
+    {
         bike = auxRack->element;
-        while(bike != NULL) {
+        while (bike != NULL)
+        {
             array[i] = bike;
             bike = bike->nextBike;
             i++;
@@ -321,24 +526,25 @@ Bike_t **sortByCumulativeClimb(BikeRack_t *root, Bike_t **array, int tam) {
     auxRack = root;
 
     /* Algoritmo do insertionSort */
-    bike = auxRack->nextRack;
-    for (i = 1; i < tam; i++) { 
-        altitude = array[i]; 
-        j = i - 1; 
-        while (j >= 0 && array[j]->bike->clunth_altitude >= altitude->bike->clunth_altitude) { 
-            array[j + 1] = array[j]; 
+    bike = auxRack->element;
+    for (i = 1; i < tam; i++)
+    {
+        altitude = array[i];
+        j = i - 1;
+        while (j >= 0 && array[j]->bike->clunth_altitude >= altitude->bike->clunth_altitude)
+        {
+            array[j + 1] = array[j];
             j--;
-        } 
-        array[j + 1] = altitude; 
+        }
+        array[j + 1] = altitude;
     }
 
     return array;
 }
 
-
 void insertBike(BikeRack_t *root, BikeData_t *bike, int element)
 {
-    BikeRack_t *NodoNextBike;
+    Bike_t *NodoNextBike;
 
     /* Caso seja a primeira insercao */
     if (root->element == NULL)
@@ -353,9 +559,9 @@ void insertBike(BikeRack_t *root, BikeData_t *bike, int element)
     else if (strcmp(root->gear, bike->gear) == 0)
     {
         NodoNextBike = createNodoBike(bike);
+        root->quant++;
         root->lastElement->nextBike = NodoNextBike;
         root->lastElement = NodoNextBike;
-        root->quant++;
         root->lastElement->id = element;
     }
     /* Caso modelo analisado de bicicleta nao tenha sido inserido */
@@ -364,7 +570,7 @@ void insertBike(BikeRack_t *root, BikeData_t *bike, int element)
         root->nextRack = initRoot();
         root->nextRack->element = createNodoBike(bike);
         root->nextRack->quant++;
-        root->nextRack->element = root->nextRack->element;
+        root->nextRack->lastElement = root->nextRack->element;
         root->nextRack->element->id = element;
         strcpy(root->nextRack->gear, bike->gear);
     }
@@ -390,8 +596,8 @@ BikeData_t *bikeInfo(FILE *arq)
     bike->gear = getGearBike(arq, bike->gear);
 
     /* Data do log */
-    // fgets(info, TAM_MAX, arq);
-    // formataData(info, &bike->Date);
+    fgets(info, TAM_MAX, arq);
+    momentData(info, &bike->Date);
 
     int quantAltitude = 0;
     int quantHeartRate = 0;

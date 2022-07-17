@@ -20,7 +20,6 @@ int open_log(char *file, char *namepath, BikeRack_t *root, BikeRack_t *copyRoot,
     strcat(name_log, namepath);
 
     arq = fopen(name_log, "r");
-    printf("\n");
 
     if (!arq)
     {
@@ -39,20 +38,21 @@ int open_log(char *file, char *namepath, BikeRack_t *root, BikeRack_t *copyRoot,
     }
 
     fclose(arq);
+    return 0;
 }
 
-void freeVetorBicicletas(BikeData_t **bike, int qtArquivos)
-{
-    int i;
-    for (i = 0; i < 20; i++)
-    {
-        free(bike[i]->gear);
-        free(bike[i]);
-    }
+// void freeVetorBicicletas(BikeData_t **bike, int qtArquivos)
+// {
+//     int i;
+//     for (i = 0; i < 20; i++)
+//     {
+//         free(bike[i]->gear);
+//         free(bike[i]);
+//     }
 
-    free(bike);
-    return;
-}
+//     free(bike);
+//     return;
+// }
 
 int main(int argc, char *argv[])
 {
@@ -60,6 +60,7 @@ int main(int argc, char *argv[])
     struct dirent *dirp;
     char *name_file;
     int op;
+    int opBike;
 
     if (strcmp(argv[1], "-d") == 0)
     {
@@ -75,25 +76,27 @@ int main(int argc, char *argv[])
 
     BikeRack_t *root = initRoot();
     BikeRack_t *copyRoot;
-    BikeData_t **allBikes = malloc(sizeof(BikeData_t*) * 100);
+    BikeData_t **allBikes = malloc(sizeof(BikeData_t *) * 100);
 
     copyRoot = root;
     int i = 0;
 
+    printf("Logs estao sendo processados.");
     while ((dirp = readdir(dp)) != NULL)
     {
+        // printf(".");
         if (dirp->d_type != 4)
         {
-            printf("\n%d", i);
             open_log(name_file, dirp->d_name, root, copyRoot, allBikes, i);
             i++;
         }
-        else {
-            printf("\n Não é um arquivo log\n\n");
+        else
+        {
+            printf("-");
         }
     }
 
-    printf("1. Mostra todas as bicicletas encontradas.\n");
+    printf("\n1. Mostra todas as bicicletas encontradas.\n");
     printf("2. Informe uma bicicleta.\n");
     printf("3. Lista todas atividades agrupadas por bicicleta e ordenadas pela data.\n");
     printf("4. Lista todas atividades agrupadas por bicicleta e ordenadas pela distância.\n");
@@ -101,26 +104,52 @@ int main(int argc, char *argv[])
     printf("6. Histograma.\n");
     printf("7. Plotar Histograma.\n");
     printf("8. Sair.\n");
-    scanf("%i", &op);
 
-    if (op == 1)
+    while (op != 8)
     {
-        printf("\n\n\nResultado\n");
-        discorvedGear(root);
-    }
-    if (op == 4) {
-        printf("\n\n\nResultado\n");
-        // sortByDistance(copyRoot);
-        printInfos(copyRoot);
-    }
-    if (op == 5) {
-        printf("\n\n\nResultado\n");
-        printCumulativeClimp(copyRoot);
-        // printInfos(copyRoot);
+        printf("Escolha uma opção: \n");
+        scanf("%i", &op);
+        if (op == 1)
+        {
+            printf("\n\n\nResultado\n");
+            discorvedGear(root);
+        }
+        if (op == 2)
+        {
+            printf("\n\n\nResultado\n");
+            discorvedGear(root);
+            printf("Informe a bicicleta desejada: ");
+            scanf("%i", &opBike);
+            copyRoot = root;
+            
+            if (opBike <= 0)
+            {
+                printf("Informe a bicicleta desejada: ");
+            } else {
+                printf("\n\n\nResultado\n");
+                copyRoot = getGear(copyRoot, opBike);
+                printInfoBike(copyRoot);
+            }
+        }
+        if (op == 4)
+        {
+            printf("\n\n\nResultado\n");
+            sortByDistance(copyRoot);
+            printInfos(copyRoot);
+        }
+        if (op == 5)
+        {
+            printf("\n\n\nResultado\n");
+            printCumulativeClimp(copyRoot);
+            printInfos(copyRoot);
+        }
+        if (op == 6)
+        {
+            printHistogram(copyRoot);
+        }
     }
 
     closedir(dp);
-
     deleteBikeRack(root);
     exit(EXIT_SUCCESS);
     exit(0);
