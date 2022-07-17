@@ -53,13 +53,16 @@ typedef struct BikeRack
 
 BikeRack_t *initRoot();
 Bike_t *createNodoBike(Bike_t *bike);
+Bike_t **sortByCumulativeClimb(BikeRack_t *root, Bike_t **array, int tam);
 BikeData_t *initBike();
 BikeData_t *bikeInfo(FILE *arq);
 
 void deleteBikeRack(BikeRack_t *root);
 void discorvedGear(BikeRack_t *root);
 void insertBike(BikeRack_t *root, BikeData_t *bike, int element);
-void insertionSortDistancia(BikeRack_t *root);
+void sortByDistance(BikeRack_t *root);
+void printInfos(BikeRack_t *root);
+void printCumulativeClimp(BikeRack_t *root);
 char *getGearBike(FILE *arq, char *gear);
 char *createBikeByGear(FILE *arq, char *gear);
 char *readLine(FILE *arq, BikeData_t *bike, char *info, double *valueField, char *nameField);

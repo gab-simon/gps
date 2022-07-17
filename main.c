@@ -58,12 +58,12 @@ int main(int argc, char *argv[])
 {
     DIR *dp;
     struct dirent *dirp;
-    char *namepath;
+    char *name_file;
     int op;
 
     if (strcmp(argv[1], "-d") == 0)
     {
-        namepath = argv[2];
+        name_file = argv[2];
     }
     else
     {
@@ -71,11 +71,11 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    dp = opendir(namepath);
+    dp = opendir(name_file);
 
     BikeRack_t *root = initRoot();
     BikeRack_t *copyRoot;
-    BikeData_t **allBikes = malloc(sizeof(BikeData_t *) * 500);
+    BikeData_t **allBikes = malloc(sizeof(BikeData_t*) * 100);
 
     copyRoot = root;
     int i = 0;
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
         if (dirp->d_type != 4)
         {
             printf("\n%d", i);
-            open_log(namepath, dirp->d_name, root, copyRoot, allBikes, i);
+            open_log(name_file, dirp->d_name, root, copyRoot, allBikes, i);
             i++;
         }
         else {
@@ -99,7 +99,8 @@ int main(int argc, char *argv[])
     printf("4. Lista todas atividades agrupadas por bicicleta e ordenadas pela distância.\n");
     printf("5. Lista todas atividades ordenadas pela subida acumulada.\n");
     printf("6. Histograma.\n");
-    printf("Sair");
+    printf("7. Plotar Histograma.\n");
+    printf("8. Sair.\n");
     scanf("%i", &op);
 
     if (op == 1)
@@ -109,7 +110,13 @@ int main(int argc, char *argv[])
     }
     if (op == 4) {
         printf("\n\n\nResultado\n");
-        insertionSortDistancia(copyRoot);
+        // sortByDistance(copyRoot);
+        printInfos(copyRoot);
+    }
+    if (op == 5) {
+        printf("\n\n\nResultado\n");
+        printCumulativeClimp(copyRoot);
+        // printInfos(copyRoot);
     }
 
     closedir(dp);
