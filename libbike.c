@@ -516,6 +516,66 @@ void printTotal(BikeRack_t *root)
     }
 }
 
+void sortByDate(BikeRack_t *root)
+{
+
+    /* Declaracao de variaveis */
+    BikeRack_t *auxRoot = root;
+    Bike_t *bike;
+    Bike_t *key;
+    int i, j;
+
+    /* While para percorrer os nodosroot */
+    while (auxRoot != NULL)
+    {
+        Bike_t **array = malloc(sizeof(Bike_t) * auxRoot->quant);
+        bike = auxRoot->element;
+
+        /* Preenche vetor com os nodosBicicleta filhos da root */
+        for (i = 0; i < auxRoot->quant; i++)
+        {
+            array[i] = bike;
+            bike = bike->nextBike;
+        }
+
+        /* Algoritmo do insertionSort */
+        for (i = 1; i < auxRoot->quant; i++)
+        {
+            key = array[i];
+            j = i - 1;
+
+            while (j >= 0 &&
+                   (array[j]->bike->Date.year > key->bike->Date.year ||
+                    (array[j]->bike->Date.year == key->bike->Date.year &&
+                     array[j]->bike->Date.mounth > key->bike->Date.mounth) ||
+                    (array[j]->bike->Date.mounth == key->bike->Date.mounth &&
+                     array[j]->bike->Date.mounth == key->bike->Date.mounth &&
+                     array[j]->bike->Date.day > key->bike->Date.day)))
+            {
+                array[j + 1] = array[j];
+                j--;
+            }
+            array[j + 1] = key;
+        }
+
+        /* Insere os nodos ordenados do array na mesma root */
+        auxRoot->element = array[0];
+        for (i = 0; i < auxRoot->quant; i++)
+        {
+            bike = array[i];
+            bike->nextBike = array[i + 1];
+        }
+        auxRoot->lastElement = array[auxRoot->quant - 1];
+        auxRoot->lastElement->nextBike = NULL;
+
+        /* Pula para a proxima root e libera a memoria do array criado */
+        auxRoot = auxRoot->nextRack;
+        free(array);
+    }
+
+    return;
+}
+
 void sortByCumulativeClimb(BikeRack_t *root)
 {
     BikeRack_t *auxRack = root;

@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
         }
     }
 
-     printf("\n-------------------------------------------------------\n");
+    printf("\n-------------------------------------------------------\n");
     printf("1. Mostra todas as bicicletas encontradas.\n");
     printf("2. Informe uma bicicleta.\n");
     printf("3. Lista todas atividades agrupadas por bicicleta e ordenadas pela data.\n");
@@ -137,6 +137,12 @@ int main(int argc, char *argv[])
                 printInfoBike(copyRoot);
             }
         }
+        if (op == 3)
+        {
+            printf("\n\n\nResultado\n");
+            sortByDate(copyRoot);
+            printInfos(copyRoot);
+        }
         if (op == 4)
         {
             printf("\n\n\nResultado\n");
@@ -151,11 +157,12 @@ int main(int argc, char *argv[])
         }
         if (op == 6)
         {
-            printf("\n\n\nResultado\n");
+            exit(1);
         }
         if (op == 7)
         {
             printTotal(copyRoot);
+            exit(1);
         }
     }
 

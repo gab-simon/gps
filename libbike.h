@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 typedef struct Histogram
 {
     int *class;
@@ -55,7 +54,7 @@ typedef struct BikeRack
 } BikeRack_t;
 
 BikeRack_t *initRoot();
-BikeRack_t* getGear(BikeRack_t *root, int op);
+BikeRack_t *getGear(BikeRack_t *root, int op);
 Bike_t *createNodoBike(BikeData_t *bike);
 BikeData_t *initBike();
 BikeData_t *bikeInfo(FILE *arq);
@@ -65,6 +64,7 @@ BikeData_t *bikeInfo(FILE *arq);
 
 void sortByCumulativeClimb(BikeRack_t *root);
 void sortByDistance(BikeRack_t *root);
+void sortByDate(BikeRack_t *root);
 
 void deleteBikeRack(BikeRack_t *root);
 void discorvedGear(BikeRack_t *root);
