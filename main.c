@@ -101,23 +101,24 @@ int main(int argc, char *argv[])
         }
     }
 
-    printf("\n1. Mostra todas as bicicletas encontradas.\n");
+     printf("\n-------------------------------------------------------\n");
+    printf("1. Mostra todas as bicicletas encontradas.\n");
     printf("2. Informe uma bicicleta.\n");
     printf("3. Lista todas atividades agrupadas por bicicleta e ordenadas pela data.\n");
     printf("4. Lista todas atividades agrupadas por bicicleta e ordenadas pela distância.\n");
     printf("5. Lista todas atividades ordenadas pela subida acumulada.\n");
     printf("6. Histograma.\n");
-    printf("7. Plotar Histograma.\n");
-    printf("8. Sair.\n");
+    printf("7. Sair.\n\n");
 
     while (op != 8)
     {
-        printf("Escolha uma opção: \n");
+        printf("Escolha uma opção: ");
         scanf("%i", &op);
         if (op == 1)
         {
             printf("\n\n\nResultado\n");
             discorvedGear(root);
+            printf("\n");
         }
         if (op == 2)
         {
@@ -152,7 +153,7 @@ int main(int argc, char *argv[])
         {
             printf("\n\n\nResultado\n");
         }
-        if (op == 8)
+        if (op == 7)
         {
             printTotal(copyRoot);
         }

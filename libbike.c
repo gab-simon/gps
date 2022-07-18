@@ -27,7 +27,6 @@ BikeRack_t *initRoot()
 BikeData_t *initBike()
 {
     /*Aloca mémoria heap*/
-    int i = 0;
     BikeData_t *bike = malloc(sizeof(BikeData_t));
     if (bike == NULL)
         return NULL;
@@ -50,11 +49,6 @@ BikeData_t *initBike()
     bike->Date.year = 0;
     bike->Date.mounth = 0;
     bike->Date.day = 0;
-
-    for (i = 0; i < 10; i++)
-    {
-        bike->Histogram.class[i] = 0;
-    }
 
     return bike;
 }
@@ -283,7 +277,7 @@ BikeRack_t *getGear(BikeRack_t *root, int op)
 void printInfoBike(BikeRack_t *root)
 {
     Bike_t *auxBike;
-    printf("MODELO                  DATA           DISTÂNCIA(km)   VEL. MEDIA(km/h)   VEL. MAXIMA(km/h)   HR MEDIO    HR MAXIMO    CADENCIA    SUBIDA ACUMULADA\n");
+    printf("MODELO                  DATA        DISTÂNCIA(km)   VEL. MEDIA(km/h)   VEL. MAXIMA(km/h)   HR MEDIO    HR MAXIMO    CADENCIA    SUBIDA ACUMULADA\n");
     auxBike = root->element;
     while (auxBike != NULL)
     {
@@ -308,7 +302,7 @@ void printInfos(BikeRack_t *root)
     int i = 0;
     Bike_t *bikeAux;
     BikeRack_t *rootAux = root;
-    printf("MODELO                          DATA           DISTÂNCIA(km)   VEL. MEDIA(km/h)   VEL. MAXIMA(km/h)   HR MEDIO    HR MAXIMO    CADENCIA    SUBIDA ACUMULADA\n");
+    printf("MODELO                          DATA       DISTÂNCIA(km)   VEL. MEDIA(km/h)   VEL. MAXIMA(km/h)   HR MEDIO    HR MAXIMO    CADENCIA    SUBIDA ACUMULADA\n");
     while (rootAux != NULL)
     {
         bikeAux = rootAux->element;
@@ -317,8 +311,8 @@ void printInfos(BikeRack_t *root)
             printf("%-30s", bikeAux->bike->gear);
             printf("%02d/%d/%-10d", bikeAux->bike->Date.day, bikeAux->bike->Date.mounth, bikeAux->bike->Date.year);
             printf("%-16.2f", bikeAux->bike->distance / 1000);
-            printf("%-19.2f", bikeAux->bike->speedMax * 3.6);
             printf("%-20.2f", bikeAux->bike->speedMed * 3.6);
+            printf("%-19.2f", bikeAux->bike->speedMax * 3.6);
             printf("%-12.2f", bikeAux->bike->heartRateMax);
             printf("%-13.2f", bikeAux->bike->heartRateMed);
             printf("%-12.2f", bikeAux->bike->cadenceMed);
@@ -627,6 +621,7 @@ BikeData_t *bikeInfo(FILE *arq)
     momentData(info, &bike->Date);
 
     int quantAltitude = 0;
+    int quantSpeed = 0;
     int quantHeartRate = 0;
     int quantCadence = 0;
     while (!feof(arq))
@@ -653,6 +648,7 @@ BikeData_t *bikeInfo(FILE *arq)
             if (value >= bike->speedMax)
                 bike->speedMax = value;
             bike->speedTotal = bike->speedTotal + value;
+            quantSpeed++;
         }
 
         /* Heart Rate */
@@ -673,7 +669,7 @@ BikeData_t *bikeInfo(FILE *arq)
     }
 
     /* Cálculo das médias */
-    bike->speedMed = bike->speedTotal / bike->quantData;
+    bike->speedMed = bike->speedTotal / quantSpeed;
     bike->heartRateMed = bike->heartRateTotal / quantHeartRate;
     bike->cadenceMed = bike->cadenceTotal / quantCadence;
 
