@@ -15,6 +15,7 @@ int open_log(char *file, char *namepath, BikeRack_t *root, BikeRack_t *copyRoot,
 
     char name_log[LINESIZE];
 
+    /* Concatena pasta + / + arquivo */
     strcpy(name_log, file);
     strcat(name_log, "/");
     strcat(name_log, namepath);
@@ -29,9 +30,13 @@ int open_log(char *file, char *namepath, BikeRack_t *root, BikeRack_t *copyRoot,
 
     while (!feof(arq))
     {
+        /* Insere bicicletas pelo id */
         allBikes[id] = bikeInfo(arq);
 
+        /* Cria uma copia do root principal */
         copyRoot = root;
+
+        /* Compara gear para verificar se ja existe no bicicletario*/
         while ((strcmp(copyRoot->gear, allBikes[id]->gear) != 0) && copyRoot->nextRack != NULL)
             copyRoot = copyRoot->nextRack;
         insertBike(copyRoot, allBikes[id], id);
@@ -59,7 +64,8 @@ int main(int argc, char *argv[])
     DIR *dp;
     struct dirent *dirp;
     char *name_file;
-    int op;
+
+    int op = 1;
     int opBike;
 
     if (strcmp(argv[1], "-d") == 0)
@@ -84,7 +90,6 @@ int main(int argc, char *argv[])
     printf("Logs estao sendo processados.");
     while ((dirp = readdir(dp)) != NULL)
     {
-        // printf(".");
         if (dirp->d_type != 4)
         {
             open_log(name_file, dirp->d_name, root, copyRoot, allBikes, i);
@@ -116,17 +121,17 @@ int main(int argc, char *argv[])
         }
         if (op == 2)
         {
-            printf("\n\n\nResultado\n");
             discorvedGear(root);
             printf("Informe a bicicleta desejada: ");
             scanf("%i", &opBike);
             copyRoot = root;
-            
+
             if (opBike <= 0)
             {
                 printf("Informe a bicicleta desejada: ");
-            } else {
-                printf("\n\n\nResultado\n");
+            }
+            else
+            {
                 copyRoot = getGear(copyRoot, opBike);
                 printInfoBike(copyRoot);
             }
@@ -140,12 +145,16 @@ int main(int argc, char *argv[])
         if (op == 5)
         {
             printf("\n\n\nResultado\n");
-            printCumulativeClimp(copyRoot);
+            sortByCumulativeClimb(copyRoot);
             printInfos(copyRoot);
         }
         if (op == 6)
         {
-            printHistogram(copyRoot);
+            printf("\n\n\nResultado\n");
+        }
+        if (op == 8)
+        {
+            printTotal(copyRoot);
         }
     }
 

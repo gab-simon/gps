@@ -8,12 +8,12 @@
 
 BikeRack_t *initRoot()
 {
+    /*Aloca mémoria heap*/
     BikeRack_t *root = malloc(sizeof(BikeRack_t));
     if (root == NULL)
-    {
-        printf("Erro ao criar root!");
         return NULL;
-    }
+
+    /*Inicia os itens da struct*/
     root->element = NULL;
     root->lastElement = NULL;
     root->nextRack = NULL;
@@ -26,10 +26,13 @@ BikeRack_t *initRoot()
 
 BikeData_t *initBike()
 {
+    /*Aloca mémoria heap*/
+    int i = 0;
     BikeData_t *bike = malloc(sizeof(BikeData_t));
     if (bike == NULL)
         return NULL;
 
+    /*Inicia os itens da struct*/
     bike->altitude = 0;
     bike->clunth_altitude = 0;
     bike->quantData = 0;
@@ -48,37 +51,37 @@ BikeData_t *initBike()
     bike->Date.mounth = 0;
     bike->Date.day = 0;
 
+    for (i = 0; i < 10; i++)
+    {
+        bike->Histogram.class[i] = 0;
+    }
+
     return bike;
 }
 
-Histogram_t *initHistogram()
-{
-    Histogram_t *histogram = malloc(sizeof(Histogram_t));
-    if (histogram == NULL)
-        return NULL;
+// Histogram_t *initHistogram()
+// {
+//     Histogram_t *histogram = malloc(sizeof(Histogram_t));
 
-    histogram->class1 = 0;
-    histogram->class2 = 0;
-    histogram->class3 = 0;
-    histogram->class4 = 0;
-    histogram->class5 = 0;
-    histogram->class6 = 0;
-    histogram->class7 = 0;
-    histogram->class8 = 0;
-    histogram->class9 = 0;
-    histogram->class10 = 0;
-    histogram->class11 = 0;
+//     int i = 0;
 
-    return histogram;
-}
+//     if (histogram == NULL)
+//         return NULL;
+
+//     for (i = 0; i < 10; i++)
+//     {
+//         histogram->class[i] = 0;
+//     }
+
+//     return histogram;
+// }
 
 void deleteBikeRack(BikeRack_t *root)
 {
-    /* Variaveis auxiliares */
     BikeRack_t *auxRack = root;
     Bike_t *auxBike;
 
-    /* Percorre todos os nodosRaiz e nodosBicicleta de forma iterativa*/
+    /* Percorre o bicicletario é*/
     while (root != NULL)
     {
         auxBike = auxRack->element;
@@ -279,16 +282,6 @@ BikeRack_t *getGear(BikeRack_t *root, int op)
 
 void printInfoBike(BikeRack_t *root)
 {
-    // BikeRack_t *rack = root;
-    // BikeRack_t *auxRack;
-    // auxRack = rack;
-    // for (i = 0; i < op - 1; i++)
-    // {
-    //     if (auxRack == NULL)
-    //         break;
-    //     auxRack = auxRack->proxRaiz;
-    // }
-
     Bike_t *auxBike;
     printf("MODELO                  DATA           DISTÂNCIA(km)   VEL. MEDIA(km/h)   VEL. MAXIMA(km/h)   HR MEDIO    HR MAXIMO    CADENCIA    SUBIDA ACUMULADA\n");
     auxBike = root->element;
@@ -371,14 +364,14 @@ void sortByDistance(BikeRack_t *root)
         }
 
         /* Insere os nodos ordenados do array na mesma raiz */
-        // auxRack->element = array[0];
-        // for (i = 0; i < auxRack->quant; i++)
-        // {
-        //     bike = array[i];
-        //     bike->nextBike = array[i + 1];
-        // }
-        // auxRack->lastElement = array[auxRack->quant - 1];
-        // auxRack->lastElement->nextBike = NULL;
+        auxRack->element = array[0];
+        for (i = 0; i < auxRack->quant; i++)
+        {
+            bike = array[i];
+            bike->nextBike = array[i + 1];
+        }
+        auxRack->lastElement = array[auxRack->quant - 1];
+        auxRack->lastElement->nextBike = NULL;
 
         /* Pula para a proxima raiz e libera a memoria do array criado */
         auxRack = auxRack->nextRack;
@@ -388,158 +381,192 @@ void sortByDistance(BikeRack_t *root)
     return;
 }
 
-void printCumulativeClimp(BikeRack_t *root)
+// void printCumulativeClimp(BikeRack_t *root)
+// {
+
+//     int i, tam = 0;
+//     BikeRack_t *auxRack = root;
+//     Bike_t **array = malloc(sizeof(Bike_t) * 100);
+
+//     /* Acha a quantidade de atividades total */
+//     while (auxRack != NULL)
+//     {
+//         tam = tam + auxRack->quant;
+//         auxRack = auxRack->nextRack;
+//     }
+
+//     /* Retorna as atividades ordenadas por subida acumulada em um array */
+//     auxRack = root;
+//     array = sortByCumulativeClimb(auxRack, array, tam);
+
+//     /* Imprime os dados do array */
+//     printf("MODELO                  DATA           DISTÂNCIA(km)   VEL. MEDIA(km/h)   VEL. MAXIMA(km/h)   HR MEDIO(bpm)     HR MAXIMO(bpm)    CADENCIA(rpm)    SUBIDA ACUMULADA(m)\n");
+//     i = 0;
+//     while (i < tam)
+//     {
+//         printf("%-24s", array[i]->bike->gear);
+//         printf("%02d/%d/%-10d", array[i]->bike->Date.day, array[i]->bike->Date.mounth, array[i]->bike->Date.year);
+//         printf("%-16.2f", array[i]->bike->distance / 1000);
+//         printf("%-19.2f", array[i]->bike->speedMed * 3.6);
+//         printf("%-20.2f", array[i]->bike->speedMax * 3.6);
+//         printf("%-12.2f", array[i]->bike->heartRateMed);
+//         printf("%-13.2f", array[i]->bike->heartRateMax);
+//         printf("%-12.2f", array[i]->bike->cadenceMed);
+//         printf("%.2f\n", array[i]->bike->clunth_altitude);
+//         i++;
+//     }
+
+//     /* Libera memoria do array */
+//     free(array);
+// }
+
+// Histogram_t *Histogram(BikeRack_t *root)
+// {
+//     int i = 0;
+//     Bike_t *bikeAux;
+//     BikeRack_t *rootAux = root;
+//     Histogram_t *auxHistogram = initHistogram();
+//     while (rootAux != NULL)
+//     {
+//         bikeAux = rootAux->element;
+//         while (bikeAux != NULL)
+//         {
+//             if (((bikeAux->bike->distance / 1000) >= 20) && ((bikeAux->bike->distance / 1000) <= 29))
+//                 auxHistogram->class[i] += 1;
+//             else if (((bikeAux->bike->distance / 1000) >= 30) && ((bikeAux->bike->distance / 1000) <= 39))
+//                 auxHistogram->class[i] += 1;
+//             else if (((bikeAux->bike->distance / 1000) >= 40) && ((bikeAux->bike->distance / 1000) <= 49))
+//                 auxHistogram->class[i] += 1;
+//             else if (((bikeAux->bike->distance / 1000) >= 50) && ((bikeAux->bike->distance / 1000) <= 59))
+//                 auxHistogram->class[i] += 1;
+//             else if (((bikeAux->bike->distance / 1000) >= 60) && ((bikeAux->bike->distance / 1000) <= 69))
+//                 auxHistogram->class[i] += 1;
+//             else if (((bikeAux->bike->distance / 1000) >= 70) && ((bikeAux->bike->distance / 1000) <= 79))
+//                 auxHistogram->class[i] += 1;
+//             else if (((bikeAux->bike->distance / 1000) >= 80) && ((bikeAux->bike->distance / 1000) <= 89))
+//                 auxHistogram->class[i] += 1;
+//             else if (((bikeAux->bike->distance / 1000) >= 90) && ((bikeAux->bike->distance / 1000) <= 99))
+//                 auxHistogram->class[i] += 1;
+//             else if (((bikeAux->bike->distance / 1000) >= 100) && ((bikeAux->bike->distance / 1000) <= 109))
+//                 auxHistogram->class[i] += 1;
+//             else if (((bikeAux->bike->distance / 1000) >= 110) && ((bikeAux->bike->distance / 1000) <= 119))
+//                 auxHistogram->class[i] += 1;
+//             else if (((bikeAux->bike->distance / 1000) >= 110) && ((bikeAux->bike->distance / 1000) <= 119))
+//                 auxHistogram->class[i] += 1;
+//         }
+//         i++;
+//     }
+
+//     return auxHistogram;
+// }
+
+// void printHistogram(BikeRack_t *root)
+// {
+//     int i, j;
+//     int lim1 = 20, lim2 = 29;
+//     BikeRack_t *rootAux = root;
+//     Bike_t *bikeAux;
+
+//     Histogram_t *auxHistogram;
+//     auxHistogram = Histogram(root);
+
+//     while (rootAux != NULL)
+//     {
+//         bikeAux = rootAux->element;
+//         while (bikeAux != NULL && lim2 <= 109)
+//         {
+
+//             for (i = 0; i <= 10; i++)
+//             {
+//                 printf("%d - %d |", lim1, lim2);
+//                 for (j = 0; auxHistogram->class[i]; j++)
+//                 {
+//                     printf("*");
+//                 }
+//                 printf("\n");
+//                 lim1 += 10;
+//                 lim2 += 10;
+//             }
+//             printf("       123456789#1233456789#123456789\n");
+//             printf("Distancia|              Quantidade\n\n");
+//         }
+//     }
+// }
+
+void printTotal(BikeRack_t *root)
 {
-
-    int i, tam = 0;
-    BikeRack_t *auxRack = root;
-    Bike_t **array = malloc(sizeof(Bike_t) * 100);
-
-    /* Acha a quantidade de atividades total */
-    while (auxRack != NULL)
-    {
-        tam = tam + auxRack->quant;
-        auxRack = auxRack->nextRack;
-    }
-
-    /* Retorna as atividades ordenadas por subida acumulada em um array */
-    auxRack = root;
-    array = sortByCumulativeClimb(auxRack, array, tam);
-
-    /* Imprime os dados do array */
-    printf("MODELO                  DATA           DISTÂNCIA(km)   VEL. MEDIA(km/h)   VEL. MAXIMA(km/h)   HR MEDIO(bpm)     HR MAXIMO(bpm)    CADENCIA(rpm)    SUBIDA ACUMULADA(m)\n");
-    i = 0;
-    while (i < tam)
-    {
-        printf("%-24s", array[i]->bike->gear);
-        printf("%02d/%d/%-10d", array[i]->bike->Date.day, array[i]->bike->Date.mounth, array[i]->bike->Date.year);
-        printf("%-16.2f", array[i]->bike->distance / 1000);
-        printf("%-19.2f", array[i]->bike->speedMed * 3.6);
-        printf("%-20.2f", array[i]->bike->speedMax * 3.6);
-        printf("%-12.2f", array[i]->bike->heartRateMed);
-        printf("%-13.2f", array[i]->bike->heartRateMax);
-        printf("%-12.2f", array[i]->bike->cadenceMed);
-        printf("%.2f\n", array[i]->bike->clunth_altitude);
-        i++;
-    }
-
-    /* Libera memoria do array */
-    free(array);
-}
-
-Histogram_t *Histogram(BikeRack_t *root)
-{
-    int i, j;
-    int lim1 = 20, lim2 = 29;
-    Bike_t *bikeAux;
+    // int i = 0;
+    // Bike_t *bikeAux;
     BikeRack_t *rootAux = root;
-    Histogram_t *auxHistogram = initHistogram();
+    printf("Quantidade de Atividades    Total Percorrido(km)    Pedal mais longo(km)    Pedal mais curto(km)    Distância Média(km/h)\n");
     while (rootAux != NULL)
     {
-        bikeAux = rootAux->element;
-        while (bikeAux != NULL)
-        {
-            if (((bikeAux->bike->distance / 1000) >= 20) && ((bikeAux->bike->distance / 1000) <= 29))
-                auxHistogram->class1 += 1;
-            else if (((bikeAux->bike->distance / 1000) >= 30) && ((bikeAux->bike->distance / 1000) <= 39))
-                auxHistogram->class2 += 1;
-            else if (((bikeAux->bike->distance / 1000) >= 40) && ((bikeAux->bike->distance / 1000) <= 49))
-                auxHistogram->class3 += 1;
-            else if (((bikeAux->bike->distance / 1000) >= 50) && ((bikeAux->bike->distance / 1000) <= 59))
-                auxHistogram->class4 += 1;
-            else if (((bikeAux->bike->distance / 1000) >= 60) && ((bikeAux->bike->distance / 1000) <= 69))
-                auxHistogram->class5 += 1;
-            else if (((bikeAux->bike->distance / 1000) >= 70) && ((bikeAux->bike->distance / 1000) <= 79))
-                auxHistogram->class6 += 1;
-            else if (((bikeAux->bike->distance / 1000) >= 80) && ((bikeAux->bike->distance / 1000) <= 89))
-                auxHistogram->class7 += 1;
-            else if (((bikeAux->bike->distance / 1000) >= 90) && ((bikeAux->bike->distance / 1000) <= 99))
-                auxHistogram->class8 += 1;
-            else if (((bikeAux->bike->distance / 1000) >= 100) && ((bikeAux->bike->distance / 1000) <= 109))
-                auxHistogram->class9 += 1;
-            else if (((bikeAux->bike->distance / 1000) >= 110) && ((bikeAux->bike->distance / 1000) <= 119))
-                auxHistogram->class10 += 1;
-            else if (((bikeAux->bike->distance / 1000) >= 110) && ((bikeAux->bike->distance / 1000) <= 119))
-                auxHistogram->class11 += 1;
-        }
-    }
+        printf("%d", rootAux->quant);
+        // bikeAux = rootAux->element;
+        // // while (bikeAux != NULL)
+        // // {
+        // //     printf("%-30s", bikeAux->bike->gear);
+        // //     printf("%02d/%d/%-10d", bikeAux->bike->Date.day, bikeAux->bike->Date.mounth, bikeAux->bike->Date.year);
+        // //     printf("%-16.2f", bikeAux->bike->distance / 1000);
+        // //     printf("%-19.2f", bikeAux->bike->speedMax * 3.6);
+        // //     printf("%-20.2f", bikeAux->bike->speedMed * 3.6);
+        // //     printf("%-12.2f", bikeAux->bike->heartRateMax);
+        // //     printf("%-13.2f", bikeAux->bike->heartRateMed);
+        // //     printf("%-12.2f", bikeAux->bike->cadenceMed);
+        // //     printf("%.2f\n", bikeAux->bike->clunth_altitude);
 
-    return;
-}
-
-void printHistogram(BikeRack_t *root)
-{
-    int i, j, k;
-    int lim1 = 20, lim2 = 29;
-    Bike_t *bikeAux;
-    BikeRack_t *rootAux = root;
-    Histogram_t *auxHistogram;
-    auxHistogram = Histogram(rootAux);
-
-    while (rootAux != NULL)
-    {
-        bikeAux = rootAux->element;
-        while (bikeAux != NULL && lim2 <= 109)
-        {
-
-            for (i = 0; i < 10; i++)
-            {
-                printf("%d - %d |", lim1, lim2);
-                for (j = 0; j < 10; j++)
-                {
-                    for (k = 0; k < auxHistogram->class1; k++)
-                    {
-                        printf("*");
-                    }
-                }
-                printf("\n");
-                lim1 += 10;
-                lim2 += 10;
-            }
-            printf("       123456789#1233456789#123456789\n");
-            printf("Distancia|              Quantidade\n\n");
-        }
+        // //     i++;
+        // //     bikeAux = bikeAux->nextBike;
+        // // }
+        rootAux = rootAux->nextRack;
     }
 }
 
-Bike_t **sortByCumulativeClimb(BikeRack_t *root, Bike_t **array, int tam)
+void sortByCumulativeClimb(BikeRack_t *root)
 {
-
-    /* Declaracao de variaveis */
     BikeRack_t *auxRack = root;
     Bike_t *bike;
-    Bike_t *altitude;
-    int i, j = 0;
+    Bike_t *key;
+    int i, j;
 
-    /* Preenche vetor com os nodosBicicleta de todas as raizes */
     while (auxRack != NULL)
     {
+        Bike_t **array = malloc(sizeof(Bike_t) * 150); // Cria vetor para ordenar atividades
         bike = auxRack->element;
-        while (bike != NULL)
+        /* Preenche vetor com os nodosBicicleta filhos da raiz */
+        for (i = 0; i < auxRack->quant; i++)
         {
             array[i] = bike;
             bike = bike->nextBike;
-            i++;
         }
-        auxRack = auxRack->nextRack;
-    }
-    auxRack = root;
 
-    /* Algoritmo do insertionSort */
-    bike = auxRack->element;
-    for (i = 1; i < tam; i++)
-    {
-        altitude = array[i];
-        j = i - 1;
-        while (j >= 0 && array[j]->bike->clunth_altitude >= altitude->bike->clunth_altitude)
+        /* Algoritmo do insertionSort */
+        for (i = 1; i < auxRack->quant; i++)
         {
-            array[j + 1] = array[j];
-            j--;
+            key = array[i];
+            j = i - 1;
+            while (j >= 0 && array[j]->bike->clunth_altitude >= key->bike->clunth_altitude)
+            {
+                array[j + 1] = array[j];
+                j--;
+            }
+            array[j + 1] = key;
         }
-        array[j + 1] = altitude;
-    }
 
-    return array;
+        /* Insere os nodos ordenados do array na mesma raiz */
+        auxRack->element = array[0];
+        for (i = 0; i < auxRack->quant; i++)
+        {
+            bike = array[i];
+            bike->nextBike = array[i + 1];
+        }
+        auxRack->lastElement = array[auxRack->quant - 1];
+        auxRack->lastElement->nextBike = NULL;
+
+        /* Pula para a proxima raiz e libera a memoria do array criado */
+        auxRack = auxRack->nextRack;
+        free(array);
+    }
 }
 
 void insertBike(BikeRack_t *root, BikeData_t *bike, int element)
